@@ -7,3 +7,5 @@ assembler.assemble ARGF
 assembler.dump file
 
 dcpu = DCPU.new file
+dcpu.program_size = assembler.body.size
+dcpu.start

@@ -1,19 +1,5 @@
 class Memory < Array
-  SIZE = 0x100
-  
-  class Word < String    
-    def to_dec
-      unpack("B*").first.to_i 2
-    end
-
-    def to_bin
-      unpack("B*").first
-    end
-    
-    def to_hex
-      unpack("H*").first
-    end
-  end
+  SIZE = 0x10000
   
   def initialize(data)
     if data.size > SIZE
@@ -23,5 +9,30 @@ class Memory < Array
     unshift *data
     map! {|v| Word.new(v)}
   end
-end
+    
+  class Word < String    
+    def to_bin
+      unpack("B*").first
+    end
 
+    def to_dec
+      unpack("B*").first.to_i 2
+    end
+    
+    def to_hex
+      unpack("H*").first
+    end
+    
+    def lower_four
+      self.to_dec & 0xF
+    end
+    
+    def lower_six
+      (self.to_dec >> 4) & 0x3F
+    end
+    
+    def upper_six
+      (self.to_dec >> 10) & 0x3F
+    end
+  end
+end

@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+require_relative 'dcpu'
 
 class Op
   attr_accessor :inst, :a, :b
@@ -60,6 +60,8 @@ class Op
 end
 
 class Assembler
+  attr_reader :body
+  
   def self.declare(map, start, string)
     count = start
     string.split(" ").each do |token|
@@ -197,10 +199,6 @@ class Assembler
     end
 
     @body.each {|op| op.resolve(labels) }
-  end
-
-  def display
-    @body.each { |op| puts op }
   end
 
   def dump(filename)

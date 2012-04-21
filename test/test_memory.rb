@@ -15,10 +15,10 @@ class MemoryTest < Test::Unit::TestCase
   end
     
   class WordTest < Test::Unit::TestCase
-    def test_to_hex_to_dec_to_bin
+    def test_to_hex_to_i_to_bin
       word = Memory::Word.new("|\x01")
       assert_equal("7c01", word.to_hex)
-      assert_equal(31745, word.to_dec)
+      assert_equal(31745, word.to_i)
       assert_equal("0111110000000001", word.to_bin)
     end
     

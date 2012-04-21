@@ -2,10 +2,12 @@ require_relative 'memory'
 require_relative 'instruction'
 
 class DCPU
-  attr_accessor :program_size
-  attr_reader :pc, :registers, :memory, :sp
+  attr_accessor :program_size, :cycle, :overflow, :pc, :registers, :memory, :sp
+  
   REGISTERS = %w{A B C X Y Z I J}.map!(&:to_sym)
       
+  include ConversionHelper
+  
   def initialize(file)
     @pc, @overflow, @cycle = 0, 0, 0
     @sp = 0xffff
@@ -48,7 +50,7 @@ class DCPU
   end
   
   def start
-    @program_size.times { process(next_word) }
+    @program_size.times { process next_word }
   end
   
   def next_word
@@ -62,68 +64,76 @@ class DCPU
     if opcode.zero?
       opcode = word.lower_six
       instruction = NonBasicInstruction.new(opcode, self)
-      instruction.a = word.upper_six
+      instruction.a.code = word.upper_six
     else
       instruction = BasicInstruction.new(opcode, self)
-      instruction.a = word.lower_six
-      instruction.b = word.upper_six
+      instruction.a.code = word.lower_six
+      instruction.b.code = word.upper_six
     end
     instruction.execute
   end
   
-  def get_value(code)
-    case code
+  def skip
+    process next_word
+  end
+  
+  def process_value(vcode)
+    case vcode.code
     when 0x00..0x07
-      @registers[code]
+      vcode.address = vcode.code
+      vcode.location = :registers
     when 0x08..0x0F
-      self[@registers[code - 0x08].to_dec]
+      vcode.address = @registers[vcode.code - 0x08].to_i
     when 0x10..0x17
-      self[next_word.to_dec + @registers[code - 0x10].to_dec]
+      vcode.address = next_word.to_i + @registers[vcode.code - 0x10].to_i
     when 0x18
-      pop
+      vcode.location = :pop
     when 0x19
-      peek
+      vcode.location = :peek
+    when 0x1A
+      vcode.location = :push
     when 0x1B
-      @sp
+      vcode.location = :sp
     when 0x1C
-      @pc
+      vcode.location = :pc
     when 0x1D
-      @overflow
+      vcode.location = :overflow
     when 0x1E
-      self[next_word]
+      vcode.address = next_word.to_i
     when 0x1F
-      next_word
+      vcode.location = :next_word
     when 0x20..0x3F
-      code - 0x20
+      vcode.location = :literal
+      vcode.value = to_bindata(vcode.code - 0x20)
     else
       raise "Invalid value code"
     end
   end
   
-  def set_value(code, value)
-    case code
-    when 0x00..0x07
-      @registers[code] = value
-    when 0x08..0x0F
-      self[@registers[code - 0x08].to_dec] = value
-    when 0x10..0x17
-      self[next_word.to_dec + @registers[code - 0x10].to_dec] = value
-    when 0x1A
-      push value
-    when 0x1B
-      @sp = value
-    when 0x1C
-      @pc = value
-    when 0x1D
-      @overflow = value
-    when 0x1E
-      self[next_word] = value
-    when 0x1F
-      next_word
-    when 0x20..0x3F
-      code - 0x20
-    else
-      raise "Invalid value code"
-    end
-  end
+  # def set_value(code, value)
+  #   case code
+  #   when 0x00..0x07
+  #     @registers[code] = value
+  #   when 0x08..0x0F
+  #     self[@registers[code - 0x08].to_i] = value
+  #   when 0x10..0x17
+  #     self[next_word.to_i + @registers[code - 0x10].to_i] = value
+  #   when 0x1A
+  #     push value
+  #   when 0x1B
+  #     @sp = value
+  #   when 0x1C
+  #     @pc = value
+  #   when 0x1D
+  #     @overflow = value
+  #   when 0x1E
+  #     self[next_word.to_i] = value
+  #   when 0x1F
+  #     next_word
+  #   when 0x20..0x3F
+  #     code - 0x20
+  #   else
+  #     raise "Invalid value code"
+  #   end
+  # end
 end

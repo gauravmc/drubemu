@@ -15,7 +15,7 @@ class Memory < Array
       unpack("B*").first
     end
 
-    def to_dec
+    def to_i
       unpack("B*").first.to_i 2
     end
     
@@ -24,15 +24,15 @@ class Memory < Array
     end
     
     def lower_four
-      self.to_dec & 0xF
+      self.to_i & 0xF
     end
     
     def lower_six
-      (self.to_dec >> 4) & 0x3F
+      (self.to_i >> 4) & 0x3F
     end
     
     def upper_six
-      (self.to_dec >> 10) & 0x3F
+      (self.to_i >> 10) & 0x3F
     end
   end
 end

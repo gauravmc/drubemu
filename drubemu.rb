@@ -9,3 +9,5 @@ assembler.dump file
 dcpu = DCPU.new file
 dcpu.program_size = assembler.body.size
 dcpu.start
+dcpu.registers.each {|k,v| puts v.to_hex}
+puts dcpu.memory.first(10).inspect

@@ -20,13 +20,13 @@ class Instruction
     def value
       case @location
       when :memory
-        @cpu.memory[@address].to_i
+        @cpu.memory[@address]
       when :registers
-        @cpu.registers[@address].to_i
+        @cpu.registers[@address]
       when :pop
-        @cpu.pop.to_i
+        @cpu.pop
       when :peek
-        @cpu.peek.to_i
+        @cpu.peek
       when :sp
         @cpu.sp
       when :pc
@@ -51,11 +51,11 @@ class Instruction
       when :push
         @cpu.push to_bindata(value)
       when :sp
-        @cpu.sp = to_i to_bindata(value)
+        @cpu.sp = value if value.is_a? Integer
       when :pc
-        @cpu.pc = to_i to_bindata(value)
+        @cpu.pc = value if value.is_a? Integer
       when :overflow
-        @cpu.overflow = to_i to_bindata(value)
+        @cpu.overflow = value if value.is_a? Integer
       end
     end
   end

@@ -60,7 +60,7 @@ class Op
 end
 
 class Assembler
-  attr_reader :body
+  attr_reader :body, :data_size
   
   def self.declare(map, start, string)
     count = start
@@ -198,9 +198,11 @@ class Assembler
       location += op.size
     end
 
-    @body.each {|op| op.resolve(labels) }
+    @body.each { |op| op.resolve(labels) }
+    
+    @data_size = @body.inject(0){|sum, op| sum + op.size } - @body.last.size + 1
   end
-
+  
   def dump(filename)
     File.open(filename, "w") do |file|
       @body.each {|inst| file.write(inst.bytes) }

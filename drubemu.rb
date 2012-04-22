@@ -7,7 +7,8 @@ assembler.assemble ARGF
 assembler.dump file
 
 dcpu = DCPU.new file
-dcpu.program_size = assembler.body.size
-dcpu.start
-dcpu.registers.each {|k,v| puts v.to_hex}
-puts dcpu.memory.first(10).inspect
+dcpu.program_size = assembler.data_size
+dcpu.run
+dcpu.registers.each {|k,v| puts "#{DCPU::REGISTERS[k]}: #{v.to_hex}"}
+puts "PC: #{dcpu.pc}"
+puts dcpu.memory.first(30).inspect

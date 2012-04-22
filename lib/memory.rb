@@ -34,5 +34,9 @@ class Memory < Array
     def upper_six
       (self.to_i >> 10) & 0x3F
     end
+    
+    def empty?
+      true if lower_four == 0 && lower_six == 0 && upper_six == 0 
+    end
   end
 end

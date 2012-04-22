@@ -1,3 +1,6 @@
+# Assembler adapted from Topher Cyll's project
+# https://github.com/toph/dcpu
+
 require_relative 'dcpu'
 
 class Op
@@ -201,6 +204,10 @@ class Assembler
     @body.each { |op| op.resolve(labels) }
     
     @data_size = @body.inject(0){|sum, op| sum + op.size } - @body.last.size + 1
+  end
+  
+  def byte_data
+    @body.inject(0){|sum, op| sum + op.size }
   end
   
   def dump(filename)

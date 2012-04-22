@@ -12,4 +12,8 @@ module ConversionHelper
   def to_i(bin)
     bin.unpack("B*").first.to_i 2
   end
+  
+  def to_hex(int)
+    int.to_s(16)
+  end
 end

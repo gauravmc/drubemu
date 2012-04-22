@@ -2,7 +2,7 @@ require_relative 'memory'
 require_relative 'instruction'
 
 class DCPU
-  attr_accessor :program_size, :cycle, :overflow, :pc, :registers, :memory, :sp
+  attr_accessor :registers, :memory, :sp, :pc, :overflow, :cycle
   
   REGISTERS = %w{A B C X Y Z I J}.map!(&:to_sym)
       
@@ -50,10 +50,11 @@ class DCPU
   end
   
   def run
-    loop do
+    while @ins_count <= 0xFFF
       word = next_word
-      break if @pc == @program_size and @pc = @program_size - 1
+      break if word.empty? and @pc -= @last_ins_size
       process word
+      @ins_count += 1
     end
   end
   
@@ -108,5 +109,38 @@ class DCPU
     else
       raise "Invalid value code"
     end
+  end
+  
+  def start(assembler)
+    @byte_data = assembler.byte_data
+    @last_ins_size = assembler.body.last.size
+    run
+    display
+  end
+  
+  def display
+    print "Registers: \n"
+    @registers.each do |k,v|
+      print green "#{REGISTERS[k]}: #{v.to_hex}"
+      unless REGISTERS[k] == :J
+        print " | "
+      else
+        print "\n"
+      end
+    end
+    
+    print green "PC: #{to_hex(@pc)}"
+    print "  | "
+    print green "O: #{to_hex(@overflow)}\n\n"
+    
+    print "Memory Dump: \n"
+    @memory.first(@byte_data).each do |word|
+      print green "#{word.to_hex} "
+    end
+    print "\n"
+  end
+  
+  def green(text)
+    "\e[#{32}m#{text}\e[0m"
   end
 end

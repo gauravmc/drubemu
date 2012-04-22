@@ -34,14 +34,14 @@ class DCPU
   end
     
   def push(value)
-    @sp = 65536 if @sp == 0
+    @sp = 0x10000 if @sp == 0
     @sp -= 1
     self[@sp] = value
   end
 
   def pop
     value = peek
-    @sp += 1
+    @sp += 1 unless @sp == 0xFFFF
     value
   end
 

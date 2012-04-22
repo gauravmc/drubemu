@@ -21,16 +21,16 @@ class DCPUTest < Test::Unit::TestCase
   end
   
   def test_pop_push_peek
-    assert_equal(0xffff, @dcpu.sp)
+    assert_equal(0, @dcpu.sp)
     
     @dcpu.push "value"
-    assert_equal(0xfffe, @dcpu.sp)
-    assert_equal(@dcpu[0xfffe], "value")
+    assert_equal(0xFFFF, @dcpu.sp)
+    assert_equal(@dcpu[0xFFFF], "value")
     
     assert_equal("value", @dcpu.peek)
-    assert_equal(0xfffe, @dcpu.sp)
+    assert_equal(0xFFFF, @dcpu.sp)
     
     assert_equal("value", @dcpu.pop)
-    assert_equal(0xffff, @dcpu.sp)
+    assert_equal(0xFFFF, @dcpu.sp)
   end
 end

@@ -36,7 +36,7 @@ class Memory < Array
     end
     
     def empty?
-      true if lower_four == 0 && lower_six == 0 && upper_six == 0 
+      lower_four == 0 && lower_six == 0 && upper_six == 0 
     end
   end
 end
